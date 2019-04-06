@@ -16,6 +16,27 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/avvisa.html');
 });
 
+app.get('/login', function (req, res) {
+    var con = mysql.createConnection({
+        host: "remotemysql.com",
+        user: "mhJOLDRxsy",
+        password: "trXOgghfWu",
+        database: "mhJOLDRxsy"
+    });
+    
+    con.connect(function(err) {
+      if (err) throw err;
+
+      con.query("SELECT * FROM volontario where email= ? and password = ?", [req.query.email, req.query.pwd], function (err, result, fields) {
+        if (err) throw err;
+        if (result.length>0) 
+           res.render('avvisa', {volontario: result[0].ID});
+        else
+           res.render('login', {msg: 'Volontario non trovato. Controlla email e password'});
+      });
+    });
+});
+
 // lista delle emergenze
 
 app.get('/listaEmergenze', function (req, res) {
@@ -83,7 +104,7 @@ io.on('connection', function(socket){ // gestisce le connessioni
         throw err;
       }
       var dbo = db.db("5E");
-      var newInfo = {data: new Date(Date.now()).toISOString(), lat: msg.posizione.lat, lng: msg.posizione.lng, indirizzo: msg.indirizzo };
+      var newInfo = {ID: msg.ID, data: new Date(Date.now()).toISOString(), lat: msg.posizione.lat, lng: msg.posizione.lng, indirizzo: msg.indirizzo };
       dbo.collection("ProtezioneCivile").insertOne(newInfo, function(err, result) {
         if (err) throw err;
         db.close();

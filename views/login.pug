@@ -1,0 +1,21 @@
+doctype html
+html(lang='en')
+  head
+    title Bootstrap Example
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
+  body
+    .container
+      h2 Protezione Civile - Login volontari
+      h2= msg
+      form(action='/login', method='get')
+        .form-group
+          label(for='email') Email:
+          input#email.form-control(type='email', placeholder='Enter email', name='email')
+        .form-group
+          label(for='pwd') Password:
+          input#pwd.form-control(type='password', placeholder='Enter password', name='pwd')
+        button.btn.btn-default(type='submit') Submit

@@ -1,0 +1,119 @@
+doctype html
+html
+  head
+    title Simple Map
+    meta(name='viewport', content='initial-scale=1.0')
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+    script(src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js')
+    // necessaria per le mappe e per la ricerca dei luoghi di interesse
+    script(src='https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCzUI8LYmnHPyFrtRT8Q8IEREZfOygUl-U')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js')
+    style.
+      .classMap { height: 400px }  <!-- necessaria per le mappe altrimenti le mappe non vengono visualizzate -->
+    script.
+      $(document).ready(function(){
+      var pos;
+      var address;
+      var map4 = new google.maps.Map($("#map4")[0], {
+      zoom: 12
+      });
+      var socket = io(); // connessione al server
+      $("#segnala").hide();
+      // geolocalizzazione
+      $("#geolocalizza").click(function(){
+      // chiamata al servizio di geolocalizzazione
+      navigator.geolocation.getCurrentPosition(function(position) {
+      pos = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+      };
+      map4.setCenter(pos);
+      var marker = new google.maps.Marker({
+      position: pos,
+      map: map4,
+      title: 'La tua posizione',
+      label: 'P'
+      });
+      $("#latlng4").text(marker.getPosition());
+      // determinazione dell'indirizzo
+      var geocoder = new google.maps.Geocoder;
+      var infowindow = new google.maps.InfoWindow;
+      geocoder.geocode({'location': marker.getPosition()}, function(results, status) {
+      if (status === 'OK') {
+      if (results[0]) {
+      address = results[0].formatted_address;
+      infowindow.setContent(results[0].formatted_address);
+      infowindow.open(map4, marker);
+      $("#address4").text(results[0].formatted_address);
+      } else {
+      window.alert('No results found');
+      }
+      } else {
+      window.alert('Geocoder failed due to: ' + status);
+      }
+      });
+      $("#segnala").show();
+      });
+      });
+      $("#segnala").click(function(){
+      // manda un avviso in broadcast a tutti gli addetti collegati
+      socket.emit('segnalazione', {ID: #{volontario}, posizione: pos, indirizzo: address});
+      });
+      socket.on('segnalazione', function(msg){ // quando viene rilevato l'evento 'segnalazione'
+      map4.setCenter(msg.posizione);
+      var marker = new google.maps.Marker({
+      position: msg.posizione,
+      map: map4,
+      title: msg.indirizzo,
+      label : 'E'
+      });
+      });
+      // visualizzazione emergenze in corso
+      $.get("listaEmergenze", function(emergenze) {
+      // ciclo per scorrere i document ricevuti dal server in emergenze
+      emergenze.forEach(function(emergenza){
+      //  visualizzazione
+      $("#elenco").html($("#elenco").html() + emergenza.indirizzo +"<br>");
+      });
+      }); // fine $.get()
+      });
+  body
+    .container-fluid
+      .row
+        .col-sm-1   
+        .col-sm-7
+          h2 Servizio segnalazione emergenze
+        .col-sm-3  
+        .col-sm-1  
+      .row
+        .col-sm-1  
+        .col-sm-7  
+        .col-sm-3  
+        .col-sm-1  
+      .row
+        .col-sm-1   
+        #map4.col-sm-7.classMap
+        .col-sm-3
+          button#geolocalizza.btn.btn-primary(type='button') Geolocalizzazione
+          br
+          br
+          | Coordinate:
+          br
+          #latlng4
+          br
+          | Indirizzo:
+          br
+          #address4
+          br
+          button#segnala.btn.btn-danger(type='button') Segnala emergenza
+          br
+          #elenco
+        .col-sm-1  
+      .row
+        .col-sm-1  
+        .col-sm-7  
+        .col-sm-3  
+        .col-sm-1  
