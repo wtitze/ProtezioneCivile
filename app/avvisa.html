@@ -104,7 +104,7 @@
                 // il marker deve avere la lettera 'E'
                 // prestare attenzione a quali informazioni sono state inviate nella funzione precedente 
                 
-                 map4.setCenter(msg.posizione);
+                map4.setCenter(msg.posizione);
                 var marker = new google.maps.Marker({
     			    position: msg.posizione,
     				map: map4,
@@ -112,6 +112,16 @@
     				label : 'E'
   				});
             });
+            
+            // visualizzazione emergenze in corso
+            
+            $.get("listaEmergenze", function(emergenze) {
+                // ciclo per scorrere i document ricevuti dal server in emergenze
+                emergenze.forEach(function(emergenza){
+                	//  visualizzazione
+                	$("#elenco").html($("#elenco").html() + emergenza.indirizzo +"<br>");
+                });	
+            }); // fine $.get()
         
 		});
 		
@@ -144,7 +154,7 @@
     	   <br>Indirizzo:
        	   <br><div id=address4></div> 	 
            <br><button type="button" class="btn btn-danger" id=segnala>Segnala emergenza</button>
-       	   <br><div id=emergenze></div> 	 
+       	   <br><div id=elenco></div> 	 
     	</div>
         <div class="col-sm-1" >&nbsp</div>
 	</div>

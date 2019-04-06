@@ -16,6 +16,24 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/avvisa.html');
 });
 
+// lista delle emergenze
+
+app.get('/listaEmergenze', function (req, res) {
+    MongoClient.connect('mongodb+srv://admin:MwbZUn1JUfbuRoSK@galvani-c4mon.mongodb.net/?retryWrites=true,{useNewUrlParser: true}', function(err, db) {
+      if (err) {
+        throw err;
+      }
+      var dbo = db.db("5E");
+      dbo.collection("ProtezioneCivile").find().sort({data:-1}).toArray(function(err, result) {
+        if (err) {
+          throw err;
+        }
+        res.send(result);
+        db.close();
+      });
+    });
+});
+
 // a differenza di quanto visto finora, si utilizza un server https,
 // necessario perché altrimenti la geolocalizzazione non funziona
 
