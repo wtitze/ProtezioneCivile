@@ -92,6 +92,8 @@
                 // alle coordiante/indirizzo in cui si trova il volontario
                 // prestare attenzione a quali informazioni devono essere inviate e quindi 
                 // al formato JSON per l'invio
+                
+                socket.emit('segnalazione', {posizione: pos, indirizzo: address});
 
             });
             
@@ -101,6 +103,14 @@
                 // scrivere il codice per visualizzare un marker alla posizone presente nel messaggio
                 // il marker deve avere la lettera 'E'
                 // prestare attenzione a quali informazioni sono state inviate nella funzione precedente 
+                
+                 map4.setCenter(msg.posizione);
+                var marker = new google.maps.Marker({
+    			    position: msg.posizione,
+    				map: map4,
+    				title: msg.indirizzo,
+    				label : 'E'
+  				});
             });
         
 		});

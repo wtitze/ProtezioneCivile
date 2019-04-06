@@ -53,6 +53,9 @@ io.on('connection', function(socket){ // gestisce le connessioni
     
     // scrivere il codice per visualizzare su console le informazioni ricevute
     // e per spedire la segnalazione a tutti i volontari connessi ad eccezione del mittente
+    
+    console.log('posizione: ' + msg.posizione.lat + ' ' + msg.posizione.lng); // sulla console viene visualizzato il messaggio ricevuto
+    socket.broadcast.emit('segnalazione', msg); // spedito a tutti tranne al mittente
   });
   
   socket.on('disconnect', function(){ // quando viene ricevuto l'evento 'disconnect'
